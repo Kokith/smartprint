@@ -6,6 +6,8 @@ node_modules
 .pnp.*
 .npm
 web_modules/
+yarn.lock
+package-lock.json
 
 # blitz
 /.blitz/
