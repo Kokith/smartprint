@@ -1,12 +1,8 @@
-import SuperJson from "superjson"
+export type CustomErrorType = "InputError"
 
 export class InputError extends Error {
-  name = "InputError"
+  name: CustomErrorType = "InputError"
   constructor() {
     super()
   }
-}
-
-export const registerAllErrors = () => {
-  SuperJson.registerClass(InputError, { identifier: "InputError" })
 }

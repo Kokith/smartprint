@@ -8,11 +8,8 @@ import {
   useQueryErrorResetBoundary,
 } from "blitz"
 import { ChakraProvider } from "@chakra-ui/react"
-import { registerAllErrors } from "app/core/configs/errors"
 import theme from "app/core/styles/theme"
 import LoginPage from "app/user/pages/login"
-
-registerAllErrors()
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
