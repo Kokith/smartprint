@@ -20,9 +20,11 @@ import { ICON_SIZE } from "app/core/styles/theme"
 import { MdAdd } from "react-icons/md"
 import { CreateClientInput, CreateClientSchema } from "app/core/libs/yup"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
-import { useCreateClient } from "app/core/services/client/useCreateClient"
+import { useHandleCustomError } from "app/core/services/useHandleCustomError"
+import { useMutation } from "blitz"
 import AppLayout from "app/core/components/layout/AppLayout"
 import Navbar from "app/core/components/layout/Navbar"
+import createClient from "../mutations/createClient"
 
 const FormClient: FC<{
   values: CreateClientInput
@@ -76,7 +78,8 @@ const FormClient: FC<{
 
 const CreateClient: FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [mutate, { isLoading }] = useCreateClient()
+  const { handleCustomError, toast } = useHandleCustomError()
+  const [mutate, { isLoading }] = useMutation(createClient)
 
   const initialValues: CreateClientInput = {
     nom: "",
@@ -88,13 +91,22 @@ const CreateClient: FC = () => {
   }
   const formik = useFormik({
     initialValues,
-    // validationSchema: CreateClientSchema,
-    onSubmit: (values, { resetForm }) => {
-      mutate(values, {
-        onSuccess() {
-          resetForm()
-        },
-      })
+    validationSchema: CreateClientSchema,
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await mutate(values, {
+          onSuccess() {
+            resetForm()
+            toast({
+              title: "Le client a bien ete creer",
+              status: "success",
+              isClosable: true,
+            })
+          },
+        })
+      } catch (err) {
+        handleCustomError(err)
+      }
     },
   })
 

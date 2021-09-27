@@ -1,5 +1,5 @@
 import { useToast } from "@chakra-ui/react"
-import { CustomErrorType, InputError } from "../configs/errors"
+import { CustomErrorType } from "../configs/errors"
 
 export const useHandleCustomError = () => {
   const toast = useToast()
@@ -10,7 +10,7 @@ export const useHandleCustomError = () => {
       switch (name) {
         case "InputError":
           toast({
-            title: "Formulaire entree erreur",
+            title: "Des donnees du formulaire sont incorrectes",
             status: "error",
             isClosable: true,
           })
