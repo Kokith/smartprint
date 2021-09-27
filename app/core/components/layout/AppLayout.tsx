@@ -24,7 +24,7 @@ const SidebarMenuItem: FC<{
   const router = useRouter()
   const isActive = router.pathname.startsWith(link) ? true : false
   return (
-    <Link href={link}>
+    <Link href={link} passHref={true}>
       <Flex
         flexDirection="row"
         alignItems="center"

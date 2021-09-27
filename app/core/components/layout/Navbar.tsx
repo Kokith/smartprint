@@ -31,7 +31,7 @@ const NavbarItem: FC<NavbarItemProps> = ({ link }) => {
   const isActive = router.pathname.startsWith(link.url) ? true : false
 
   return (
-    <Link key={link.url} href={link.url}>
+    <Link key={link.url} href={link.url} passHref={true}>
       <Text as="button" marginRight={5} color={isActive ? "secondary" : "white"} fontWeight="bold">
         {link.name}
       </Text>
