@@ -2,7 +2,7 @@ import * as yup from "yup"
 
 // client
 
-export const CreateClientSchema = yup.object({
+export const DefaultClientSchema = yup.object({
   nom: yup.string().required(),
   nif: yup.string().required(),
   stat: yup.string().required(),
@@ -10,4 +10,4 @@ export const CreateClientSchema = yup.object({
   email: yup.string().email().required(),
   contact: yup.string().required(),
 })
-export type CreateClientInput = yup.InferType<typeof CreateClientSchema>
+export type DefaultClientInput = yup.InferType<typeof DefaultClientSchema>

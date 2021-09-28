@@ -1,10 +1,10 @@
 import db, { Client } from "db"
 import { Ctx } from "blitz"
-import { CreateClientInput, CreateClientSchema } from "app/core/libs/yup"
+import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
 import { InputError } from "app/core/configs/errors"
 
-export default async function createClient(input: CreateClientInput, ctx: Ctx): Promise<Client> {
-  const isInputValid = await CreateClientSchema.isValid(input)
+export default async function createClient(input: DefaultClientInput, ctx: Ctx): Promise<Client> {
+  const isInputValid = await DefaultClientSchema.isValid(input)
   if (!isInputValid) throw new InputError()
   const result = await db.client.create({
     data: {

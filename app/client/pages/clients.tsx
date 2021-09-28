@@ -1,5 +1,11 @@
 import React, { FC, Fragment, useState, Suspense } from "react"
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
   Flex,
   FormControl,
@@ -23,27 +29,31 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { ICON_SIZE } from "app/core/styles/theme"
-import { MdAdd } from "react-icons/md"
-import { CreateClientInput, CreateClientSchema } from "app/core/libs/yup"
+import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
+import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
 import { TAKE } from "app/core/configs"
+import { Client } from "db"
 import AppLayout from "app/core/components/layout/AppLayout"
 import Navbar from "app/core/components/layout/Navbar"
 import createClient from "../mutations/createClient"
 import Pagination from "app/core/components/common/Pagination"
 import clients from "../queries/clients"
+import delClient from "../mutations/delClients"
+import updateClient from "../mutations/updateClient"
 
 const FormClient: FC<{
-  values: CreateClientInput
-  errors: FormikErrors<CreateClientInput>
-  touched: FormikTouched<CreateClientInput>
+  values: DefaultClientInput
+  errors: FormikErrors<DefaultClientInput>
+  touched: FormikTouched<DefaultClientInput>
   onChange: (key: string) => (e: string | React.ChangeEvent<any>) => void
 }> = ({ values, errors, touched, onChange }) => {
-  const isInvalid = (key: keyof CreateClientInput): boolean =>
+  const isInvalid = (key: keyof DefaultClientInput): boolean =>
     errors[key] && touched[key] ? true : false
 
   return (
@@ -92,7 +102,7 @@ const CreateClient: FC = () => {
   const { handleCustomError, toast } = useHandleCustomError()
   const [mutate, { isLoading }] = useMutation(createClient)
 
-  const initialValues: CreateClientInput = {
+  const initialValues: DefaultClientInput = {
     nom: "",
     nif: "",
     stat: "",
@@ -102,14 +112,14 @@ const CreateClient: FC = () => {
   }
   const formik = useFormik({
     initialValues,
-    validationSchema: CreateClientSchema,
+    validationSchema: DefaultClientSchema,
     onSubmit: async (values, { resetForm }) => {
       try {
         await mutate(values, {
           onSuccess() {
             resetForm()
             toast({
-              title: "Le client a bien ete creer",
+              title: "Le client a ete creer avec succes",
               status: "success",
               isClosable: true,
             })
@@ -174,11 +184,128 @@ const CreateClient: FC = () => {
   )
 }
 
+const UpdateClient: FC<{ initialData: Client }> = ({ initialData }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [mutate, { isLoading }] = useMutation(updateClient)
+  const toast = useToast()
+
+  const initialValues: DefaultClientInput = {
+    nom: initialData.nom,
+    nif: initialData.nif,
+    stat: initialData.stat,
+    adresse: initialData.adresse,
+    email: initialData.email,
+    contact: initialData.contact,
+  }
+  const formik = useFormik({
+    initialValues,
+    validationSchema: DefaultClientSchema,
+    onSubmit: async (values) => {
+      await mutate({ id: initialData.id, data: values })
+      toast({
+        title: "Le client a ete modifier avec succes",
+        status: "success",
+        isClosable: true,
+      })
+      invalidateQuery(clients)
+    },
+  })
+
+  const initialRef = React.useRef<any>()
+  const finalRef = React.useRef<any>()
+
+  return (
+    <Fragment>
+      <Button colorScheme="blue" onClick={onOpen} variant="ghost">
+        <Icon as={MdEdit} width={ICON_SIZE} height={ICON_SIZE} />
+      </Button>
+
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <form onSubmit={formik.handleSubmit}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Modifier un client</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormClient
+                values={formik.values}
+                errors={formik.errors}
+                touched={formik.touched}
+                onChange={(key) => formik.handleChange(key)}
+              />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
+                Modifier
+              </Button>
+              <Button onClick={onClose}>Annuler</Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </Fragment>
+  )
+}
+
+const DelClient: FC<{ id: number }> = ({ id }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = (): void => setIsOpen(false)
+  const toast = useToast()
+  const cancelRef = React.useRef<any>()
+
+  const [mutate, { isLoading }] = useMutation(delClient)
+
+  const handleSubmit = async (): Promise<void> => {
+    await mutate({ id })
+    invalidateQuery(clients)
+    toast({
+      title: "Le client a ete supprimer avec succes",
+      status: "success",
+      isClosable: true,
+    })
+  }
+
+  return (
+    <Fragment>
+      <Button variant="ghost" onClick={() => setIsOpen(true)}>
+        <Icon as={MdDelete} width={ICON_SIZE} height={ICON_SIZE} color="red" />
+      </Button>
+
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Supprimer un client
+            </AlertDialogHeader>
+
+            <AlertDialogBody>Etes vous sur de vouloir supprimer ce client ?</AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button colorScheme="red" onClick={handleSubmit} mr={3} isLoading={isLoading}>
+                Supprimer
+              </Button>
+              <Button ref={cancelRef} onClick={onClose} marginLeft="">
+                Annuler
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Fragment>
+  )
+}
+
 const ListClient: FC = () => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
 
-  const [{ items, pageCount }] = usePaginatedQuery(clients, {
+  const [{ items, pageCount, count }] = usePaginatedQuery(clients, {
     orderBy: { id: "desc" },
     skip: take * (page - 1),
     take: take,
@@ -208,7 +335,7 @@ const ListClient: FC = () => {
           setPage(pageObj.selected + 1)
         }}
       />
-      {items.length ? "Liste des clients" : "Aucune client"}
+      {items.length ? `Liste des clients (${count})` : "Aucune client"}
     </Flex>
   )
 
@@ -217,7 +344,7 @@ const ListClient: FC = () => {
       <TableCaption>{caption()}</TableCaption>
       <Thead>{colums()}</Thead>
       <Tbody>
-        {items.map((c: any) => {
+        {items.map((c) => {
           return (
             <Tr key={c.id}>
               <Td>{c.nom}</Td>
@@ -226,9 +353,8 @@ const ListClient: FC = () => {
               <Td>{c.adresse}</Td>
               <Td>{c.contact}</Td>
               <Td>
-                {/* <DelClient id={c.id} />
-                  <UpdateClient initialData={c} /> */}
-                Actions
+                <DelClient id={c.id} />
+                <UpdateClient initialData={c} />
               </Td>
             </Tr>
           )
@@ -247,7 +373,7 @@ const ClientsPage: FC = () => {
       </Flex>
 
       <Flex padding="1.5">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div>Chargement donnees clientes...</div>}>
           <ListClient />
         </Suspense>
       </Flex>
