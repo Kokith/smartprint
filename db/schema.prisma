@@ -59,7 +59,7 @@ model Token {
 
 model Client {
   id      Int    @id @default(autoincrement())
-  nom     String
+  nom     String @unique
   nif     String
   stat    String
   adresse String

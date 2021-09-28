@@ -1,8 +1,19 @@
-export type CustomErrorType = "InputError"
+import superjson from "superjson"
 
 export class InputError extends Error {
-  name: CustomErrorType = "InputError"
+  name = "InputError"
   constructor() {
     super()
   }
 }
+superjson.registerClass(InputError)
+
+export class ClientAlreadyExistError extends Error {
+  name = "ClientAlreadyExistError"
+  info: any
+  constructor(args?: { info: any }) {
+    super()
+    this.info = args?.info
+  }
+}
+superjson.registerClass(ClientAlreadyExistError)

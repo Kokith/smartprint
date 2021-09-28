@@ -185,6 +185,7 @@ const CreateClient: FC = () => {
 }
 
 const UpdateClient: FC<{ initialData: Client }> = ({ initialData }) => {
+  const { handleCustomError } = useHandleCustomError()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [mutate, { isLoading }] = useMutation(updateClient)
   const toast = useToast()
@@ -201,13 +202,17 @@ const UpdateClient: FC<{ initialData: Client }> = ({ initialData }) => {
     initialValues,
     validationSchema: DefaultClientSchema,
     onSubmit: async (values) => {
-      await mutate({ id: initialData.id, data: values })
-      toast({
-        title: "Le client a ete modifier avec succes",
-        status: "success",
-        isClosable: true,
-      })
-      invalidateQuery(clients)
+      try {
+        await mutate({ id: initialData.id, data: values })
+        toast({
+          title: "Le client a ete modifier avec succes",
+          status: "success",
+          isClosable: true,
+        })
+        invalidateQuery(clients)
+      } catch (err) {
+        handleCustomError(err)
+      }
     },
   })
 
