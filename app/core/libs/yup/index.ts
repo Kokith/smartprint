@@ -10,5 +10,4 @@ export const CreateClientSchema = yup.object({
   email: yup.string().email().required(),
   contact: yup.string().required(),
 })
-
 export type CreateClientInput = yup.InferType<typeof CreateClientSchema>

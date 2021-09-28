@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from "react"
+import React, { FC, Fragment, useState, Suspense } from "react"
 import {
   Button,
   Flex,
@@ -14,6 +14,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react"
 import { ICON_SIZE } from "app/core/styles/theme"
@@ -21,10 +29,13 @@ import { MdAdd } from "react-icons/md"
 import { CreateClientInput, CreateClientSchema } from "app/core/libs/yup"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
-import { useMutation } from "blitz"
+import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
+import { TAKE } from "app/core/configs"
 import AppLayout from "app/core/components/layout/AppLayout"
 import Navbar from "app/core/components/layout/Navbar"
 import createClient from "../mutations/createClient"
+import Pagination from "app/core/components/common/Pagination"
+import clients from "../queries/clients"
 
 const FormClient: FC<{
   values: CreateClientInput
@@ -102,6 +113,7 @@ const CreateClient: FC = () => {
               status: "success",
               isClosable: true,
             })
+            invalidateQuery(clients)
           },
         })
       } catch (err) {
@@ -162,6 +174,71 @@ const CreateClient: FC = () => {
   )
 }
 
+const ListClient: FC = () => {
+  const [page, setPage] = useState(1)
+  const [take, setTake] = useState(TAKE[0] as number)
+
+  const [{ items, pageCount }] = usePaginatedQuery(clients, {
+    orderBy: { id: "desc" },
+    skip: take * (page - 1),
+    take: take,
+  })
+
+  const colums = (): JSX.Element => (
+    <Tr>
+      <Th>Nom</Th>
+      <Th>Nif</Th>
+      <Th>Stat</Th>
+      <Th>Adresse</Th>
+      <Th>Contact</Th>
+      <Th>Actions</Th>
+    </Tr>
+  )
+
+  const caption = (): JSX.Element => (
+    <Flex justifyContent="space-between">
+      <Pagination
+        curPage={page}
+        pageCount={pageCount}
+        take={take}
+        onTakeChange={(value) => {
+          setTake(value)
+        }}
+        onPageChange={(pageObj) => {
+          setPage(pageObj.selected + 1)
+        }}
+      />
+      {items.length ? "Liste des clients" : "Aucune client"}
+    </Flex>
+  )
+
+  return (
+    <Table variant="simple">
+      <TableCaption>{caption()}</TableCaption>
+      <Thead>{colums()}</Thead>
+      <Tbody>
+        {items.map((c: any) => {
+          return (
+            <Tr key={c.id}>
+              <Td>{c.nom}</Td>
+              <Td>{c.nif}</Td>
+              <Td>{c.stat}</Td>
+              <Td>{c.adresse}</Td>
+              <Td>{c.contact}</Td>
+              <Td>
+                {/* <DelClient id={c.id} />
+                  <UpdateClient initialData={c} /> */}
+                Actions
+              </Td>
+            </Tr>
+          )
+        })}
+      </Tbody>
+      <Tfoot>{colums()}</Tfoot>
+    </Table>
+  )
+}
+
 const ClientsPage: FC = () => {
   return (
     <AppLayout navbar={<Navbar links={[]} />}>
@@ -169,7 +246,11 @@ const ClientsPage: FC = () => {
         <CreateClient />
       </Flex>
 
-      <Flex padding="1.5">{/* <ListClient /> */}</Flex>
+      <Flex padding="1.5">
+        <Suspense fallback={<div>Loading...</div>}>
+          <ListClient />
+        </Suspense>
+      </Flex>
     </AppLayout>
   )
 }

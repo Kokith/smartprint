@@ -1,0 +1,25 @@
+.container {
+  list-style-type: none;
+  display: flex;
+}
+
+.page {
+  margin-inline: 5px;
+  font-weight: bold;
+  color: #0e3359;
+  padding-inline: 15px;
+}
+
+.active {
+  border: 1px solid #0e3359;
+}
+
+.previous {
+  font-weight: bold;
+  color: #0e3359;
+}
+
+.next {
+  font-weight: bold;
+  color: #0e3359;
+}
