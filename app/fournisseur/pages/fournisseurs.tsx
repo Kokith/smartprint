@@ -26,37 +26,42 @@ import { MdAdd } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
 import AppLayout from "app/core/components/layout/AppLayout"
 
+type InputKey = keyof DefaultFournisseurInput
 const FormFournisseur: FC<{
   values: DefaultFournisseurInput
   errors: FormikErrors<DefaultFournisseurInput>
   touched: FormikTouched<DefaultFournisseurInput>
   onChange: (key: string) => (e: string | React.ChangeEvent<any>) => void
 }> = ({ values, touched, errors, onChange }) => {
-  const CustomInput: FC<{ inputKey: keyof DefaultFournisseurInput; i: number }> = ({
-    inputKey,
-    i,
-  }) => {
-    const name = inputKey.charAt(0).toUpperCase() + inputKey.slice(1)
-    const isError = !!errors[inputKey] && !!touched[inputKey]
+  const customInput = (args: { inputKey: InputKey; i: number }): JSX.Element => {
+    const name = args.inputKey.charAt(0).toUpperCase() + args.inputKey.slice(1)
+    const isInvalid = !!errors[args.inputKey] && !!touched[args.inputKey]
     return (
       <FormControl
-        key={inputKey}
+        isInvalid={isInvalid}
+        key={args.inputKey}
         {...{
-          mt: i === 0 ? undefined : 4,
+          mt: args.i === 0 ? undefined : 4,
         }}
       >
         <FormLabel>{name}</FormLabel>
-        <Input placeholder={name} value={values[inputKey]} onChange={onChange(inputKey)} />
-        {isError && <FormErrorMessage>{errors[inputKey]}</FormErrorMessage>}
+        <Input
+          placeholder={name}
+          value={values[args.inputKey]}
+          onChange={onChange(args.inputKey)}
+        />
+        {isInvalid && <FormErrorMessage>{errors[args.inputKey]}</FormErrorMessage>}
       </FormControl>
     )
   }
 
   return (
     <Fragment>
-      {Object.keys(values).map((key: keyof DefaultFournisseurInput, i) => (
-        <CustomInput key={key} inputKey={key} i={i} />
-      ))}
+      {Object.keys(values)
+        .filter((key: InputKey) => key !== "type")
+        .map((key: InputKey, i) => (
+          <Fragment key={key}>{customInput({ inputKey: key, i })}</Fragment>
+        ))}
       <FormControl mt={4}>
         <FormLabel>Type</FormLabel>
         <Select placeholder="Type" value={values.type} onChange={onChange("type")} required>
