@@ -17,3 +17,12 @@ export class ClientAlreadyExistError extends Error {
   }
 }
 superjson.registerClass(ClientAlreadyExistError)
+
+export class FournisseurAlreadyExistError extends Error {
+  name = "FournisseurAlreadyExistError"
+  info: any
+  constructor(args: { info: any }) {
+    super()
+    this.info = args.info
+  }
+}
