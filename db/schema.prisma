@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,6 +11,14 @@ generator client {
 }
 
 // --------------------------------------
+
+enum FournisseurType {
+  IMPORT
+  DIVERS
+  LOCAL
+
+  @@map("fournisseur_type")
+}
 
 model User {
   id             Int      @id @default(autoincrement())
@@ -65,6 +73,19 @@ model Client {
   adresse String
   email   String
   contact String
+}
+
+model Fournisseur {
+  id      Int             @id @default(autoincrement())
+  nom     String          @unique
+  nif     String
+  stat    String
+  adresse String
+  email   String
+  contact String
+  type    FournisseurType
+
+  @@map("fournisseur")
 }
 
 // NOTE: It's highly recommended to use an enum for the token type

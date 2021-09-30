@@ -1,9 +1,7 @@
 import React, { FC, memo, useEffect, useState } from "react"
-import Link from "next/link"
 import { MdDashboard, MdSettings } from "react-icons/md"
 import { BsGraphUp } from "react-icons/bs"
 import { IconType } from "react-icons/lib"
-import { useRouter } from "next/router"
 import { VStack, Text, Flex, Icon, Spacer, Box, Spinner } from "@chakra-ui/react"
 import {
   FaProductHunt,
@@ -15,16 +13,17 @@ import {
 } from "react-icons/fa"
 import { ICON_SIZE } from "../../styles/theme"
 import { useIsFetching } from "react-query"
+import { Routes, Link, RouteUrlObject, useRouter } from "blitz"
 
 const SidebarMenuItem: FC<{
   title: string
-  link: string
+  link: RouteUrlObject
   itemIcon: IconType
 }> = ({ title, itemIcon, link }) => {
   const router = useRouter()
-  const isActive = router.pathname.startsWith(link) ? true : false
+  const isActive = router.pathname.startsWith(link.pathname) ? true : false
   return (
-    <Link href={link} passHref={true}>
+    <Link href={link}>
       <Flex
         flexDirection="row"
         alignItems="center"
@@ -78,16 +77,24 @@ const Sidebar: FC = () => {
   return (
     <VStack height="full" width="15%" position="fixed" bg="primary">
       <MemoizedSmartPrintTitle />
-      <SidebarMenuItem title="Dashboard" itemIcon={MdDashboard} link="/dashboard" />
-      <SidebarMenuItem title="Stock" itemIcon={FaProductHunt} link="/stock" />
-      <SidebarMenuItem title="Fournisseurs" itemIcon={FaCartPlus} link="/fournisseurs" />
-      <SidebarMenuItem title="Projets" itemIcon={FaProjectDiagram} link="/projets" />
-      <SidebarMenuItem title="Devis" itemIcon={FaCalculator} link="/devis" />
-      <SidebarMenuItem title="Clients" itemIcon={FaUsers} link="/clients" />
-      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} link="/finance/charges" />
-      <SidebarMenuItem title="Factures" itemIcon={FaMoneyBillWaveAlt} link="/factures" />
+      <SidebarMenuItem title="Dashboard" itemIcon={MdDashboard} link={Routes.DashboardPage()} />
+      <SidebarMenuItem title="Stock" itemIcon={FaProductHunt} link={Routes.StockPage()} />
+      <SidebarMenuItem
+        title="Fournisseurs"
+        itemIcon={FaCartPlus}
+        link={Routes.FournisseursPage()}
+      />
+      <SidebarMenuItem title="Projets" itemIcon={FaProjectDiagram} link={Routes.ProjetsPage()} />
+      <SidebarMenuItem title="Devis" itemIcon={FaCalculator} link={Routes.DevisPage()} />
+      <SidebarMenuItem title="Clients" itemIcon={FaUsers} link={Routes.ClientsPage()} />
+      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} link={Routes.FinancePage()} />
+      <SidebarMenuItem
+        title="Factures"
+        itemIcon={FaMoneyBillWaveAlt}
+        link={Routes.FacturesPage()}
+      />
       <Spacer />
-      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} link="/parametres/mon-compte" />
+      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} link={Routes.ParametrePage()} />
     </VStack>
   )
 }
