@@ -318,10 +318,12 @@ const ListClient: FC = () => {
 
   const colums = (): JSX.Element => (
     <Tr>
+      <Th>Identifiant</Th>
       <Th>Nom</Th>
       <Th>Nif</Th>
       <Th>Stat</Th>
       <Th>Adresse</Th>
+      <Th>Email</Th>
       <Th>Contact</Th>
       <Th>Actions</Th>
     </Tr>
@@ -352,10 +354,12 @@ const ListClient: FC = () => {
         {items.map((c) => {
           return (
             <Tr key={c.id}>
+              <Td>{c.id}</Td>
               <Td>{c.nom}</Td>
               <Td>{c.nif}</Td>
               <Td>{c.stat}</Td>
               <Td>{c.adresse}</Td>
+              <Td>{c.email}</Td>
               <Td>{c.contact}</Td>
               <Td>
                 <DelClient id={c.id} />
@@ -378,7 +382,7 @@ const ClientsPage: FC = () => {
       </Flex>
 
       <Flex padding="1.5">
-        <Suspense fallback={<div>Chargement donnees clientes...</div>}>
+        <Suspense fallback={<div>Chargement de la liste des clients...</div>}>
           <ListClient />
         </Suspense>
       </Flex>

@@ -1,5 +1,9 @@
 import { useToast } from "@chakra-ui/react"
-import { ClientAlreadyExistError, InputError } from "../configs/errors"
+import {
+  ClientAlreadyExistError,
+  FournisseurAlreadyExistError,
+  InputError,
+} from "../configs/errors"
 
 export const useHandleCustomError = () => {
   const toast = useToast()
@@ -14,7 +18,13 @@ export const useHandleCustomError = () => {
         })
       } else if (err instanceof ClientAlreadyExistError) {
         toast({
-          title: "Le client (nom) existe deja",
+          title: "Le client existe deja",
+          status: "error",
+          isClosable: true,
+        })
+      } else if (err instanceof FournisseurAlreadyExistError) {
+        toast({
+          title: "Le fournisseur existe deja",
           status: "error",
           isClosable: true,
         })

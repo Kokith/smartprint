@@ -1,4 +1,4 @@
-import React, { FC, Fragment } from "react"
+import React, { FC, Fragment, Suspense, useState } from "react"
 import { fournisseurNavbar } from "app/core/components/layout/Navbar"
 import {
   Button,
@@ -17,6 +17,14 @@ import {
   ModalOverlay,
   Select,
   Spacer,
+  Table,
+  TableCaption,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
 } from "@chakra-ui/react"
 import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
@@ -24,7 +32,13 @@ import { FournisseurType } from "db"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { MdAdd } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
+import { TAKE } from "app/core/configs"
+import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
+import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import AppLayout from "app/core/components/layout/AppLayout"
+import fournisseurs from "../queries/fournisseurs"
+import Pagination from "app/core/components/common/Pagination"
+import createFournisseur from "../mutations/createFournisseur"
 
 type InputKey = keyof DefaultFournisseurInput
 const FormFournisseur: FC<{
@@ -33,6 +47,10 @@ const FormFournisseur: FC<{
   touched: FormikTouched<DefaultFournisseurInput>
   onChange: (key: string) => (e: string | React.ChangeEvent<any>) => void
 }> = ({ values, touched, errors, onChange }) => {
+  console.log({
+    touched,
+    errors,
+  })
   const customInput = (args: { inputKey: InputKey; i: number }): JSX.Element => {
     const name = args.inputKey.charAt(0).toUpperCase() + args.inputKey.slice(1)
     const isInvalid = !!errors[args.inputKey] && !!touched[args.inputKey]
@@ -62,13 +80,14 @@ const FormFournisseur: FC<{
         .map((key: InputKey, i) => (
           <Fragment key={key}>{customInput({ inputKey: key, i })}</Fragment>
         ))}
-      <FormControl mt={4}>
+      <FormControl mt={4} isInvalid={!!touched.type && !!errors.type}>
         <FormLabel>Type</FormLabel>
-        <Select placeholder="Type" value={values.type} onChange={onChange("type")} required>
+        <Select placeholder="Type fournisseur" value={values.type} onChange={onChange("type")}>
           <option value={FournisseurType.DIVERS}>{FournisseurType.DIVERS}</option>
           <option value={FournisseurType.IMPORT}>{FournisseurType.IMPORT}</option>
           <option value={FournisseurType.LOCAL}>{FournisseurType.LOCAL}</option>
         </Select>
+        {!!touched.type && !!errors.type && <FormErrorMessage>{errors.type}</FormErrorMessage>}
       </FormControl>
     </Fragment>
   )
@@ -76,6 +95,8 @@ const FormFournisseur: FC<{
 
 const CreateFournisseur: FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { handleCustomError, toast } = useHandleCustomError()
+  const [mutate, { isLoading }] = useMutation(createFournisseur)
 
   const initialValues: DefaultFournisseurInput = {
     nom: "",
@@ -89,8 +110,19 @@ const CreateFournisseur: FC = () => {
   const formik = useFormik({
     initialValues,
     validationSchema: DefaultFournisseurSchema,
-    onSubmit: (values, { resetForm }) => {
-      //
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await mutate(values)
+        invalidateQuery(fournisseurs)
+        resetForm()
+        toast({
+          title: "Le fournisseur a ete creer avec succes",
+          status: "success",
+          isClosable: true,
+        })
+      } catch (err) {
+        handleCustomError(err)
+      }
     },
   })
 
@@ -128,7 +160,7 @@ const CreateFournisseur: FC = () => {
             </ModalBody>
 
             <ModalFooter>
-              <Button colorScheme="blue" mr={3} type="submit" isLoading={false}>
+              <Button colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
                 Ajouter
               </Button>
               <Button onClick={onClose}>Annuler</Button>
@@ -137,6 +169,77 @@ const CreateFournisseur: FC = () => {
         </form>
       </Modal>
     </Fragment>
+  )
+}
+
+const ListFournisseur: FC = () => {
+  const [page, setPage] = useState(1)
+  const [take, setTake] = useState(TAKE[0] as number)
+
+  const [{ items, count }] = usePaginatedQuery(fournisseurs, {
+    orderBy: { id: "desc" },
+    skip: take * (page - 1),
+    take: take,
+  })
+
+  const colums = (): JSX.Element => (
+    <Tr>
+      <Th>Identifiant</Th>
+      <Th>Nom</Th>
+      <Th>Nif</Th>
+      <Th>Stat</Th>
+      <Th>Adresse</Th>
+      <Th>Email</Th>
+      <Th>Contact</Th>
+      <Th>Type</Th>
+      <Th>Actions</Th>
+    </Tr>
+  )
+
+  const caption = (): JSX.Element => (
+    <Flex justifyContent="space-between">
+      <Pagination
+        curPage={page}
+        pageCount={count / take}
+        take={take}
+        onTakeChange={(value) => {
+          setTake(value)
+        }}
+        onPageChange={(pageObj) => {
+          setPage(pageObj.selected + 1)
+        }}
+      />
+      {items.length ? `Liste des fournisseurs (${count})` : "Aucune fournisseur"}
+    </Flex>
+  )
+
+  return (
+    <Table variant="simple">
+      <TableCaption>{caption()}</TableCaption>
+      <Thead>{colums()}</Thead>
+      <Tbody>
+        {items.map((c) => {
+          return (
+            <Tr key={c.id}>
+              <Td>{c.id}</Td>
+              <Td>{c.nom}</Td>
+              <Td>{c.nif}</Td>
+              <Td>{c.stat}</Td>
+              <Td>{c.adresse}</Td>
+              <Td>{c.email}</Td>
+              <Td>{c.contact}</Td>
+              <Td>{c.type}</Td>
+              <Td>
+                {/* <DelClient id={c.id} />
+                <UpdateClient initialData={c} /> */}
+                Actions
+              </Td>
+            </Tr>
+          )
+        })}
+      </Tbody>
+      <Tfoot>{colums()}</Tfoot>
+    </Table>
   )
 }
 
@@ -149,7 +252,11 @@ const FournisseursPage: FC = () => {
         {/* <SearchFournisseur /> */}
       </Flex>
 
-      <Flex padding="1.5">{/* <ListFournisseur /> */}</Flex>
+      <Flex padding="1.5">
+        <Suspense fallback={<div>Chargement de la liste des fournisseurs...</div>}>
+          <ListFournisseur />
+        </Suspense>
+      </Flex>
     </AppLayout>
   )
 }
