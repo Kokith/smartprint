@@ -17,7 +17,6 @@ const clients = async ({ where, orderBy, skip, take }: ClientsInput) => {
     nextPage,
     hasMore,
     count,
-    pageCount: count / take!,
   }
 }
 

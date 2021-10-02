@@ -310,7 +310,7 @@ const ListClient: FC = () => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
 
-  const [{ items, pageCount, count }] = usePaginatedQuery(clients, {
+  const [{ items, count }] = usePaginatedQuery(clients, {
     orderBy: { id: "desc" },
     skip: take * (page - 1),
     take: take,
@@ -333,7 +333,7 @@ const ListClient: FC = () => {
     <Flex justifyContent="space-between">
       <Pagination
         curPage={page}
-        pageCount={pageCount}
+        pageCount={count / take}
         take={take}
         onTakeChange={(value) => {
           setTake(value)
