@@ -7,6 +7,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
   Button,
   Flex,
   FormControl,
@@ -14,6 +15,8 @@ import {
   FormLabel,
   Icon,
   Input,
+  InputGroup,
+  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -37,7 +40,7 @@ import {
 import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
 import { Fournisseur, FournisseurType } from "db"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
+import { MdAdd, MdDelete, MdEdit, MdSearch } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { TAKE } from "app/core/configs"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
@@ -304,7 +307,29 @@ const DelFournisseur: FC<{ id: number }> = ({ id }) => {
   )
 }
 
-const ListFournisseur: FC = () => {
+const SearchFournisseur: FC<{ filter: string; onChange: (value: string) => void }> = ({
+  filter,
+  onChange,
+}) => {
+  return (
+    <Box>
+      <InputGroup>
+        <InputLeftElement pointerEvents="none">
+          <Icon as={MdSearch} />
+        </InputLeftElement>
+        <Input
+          value={filter}
+          onChange={(e) => onChange(e.target.value)}
+          type="text"
+          placeholder="Rechercher un fournisseur"
+          variant="filled"
+        />
+      </InputGroup>
+    </Box>
+  )
+}
+
+const ListFournisseur: FC<{ filter: string }> = ({ filter }) => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
 
@@ -312,6 +337,11 @@ const ListFournisseur: FC = () => {
     orderBy: { id: "desc" },
     skip: take * (page - 1),
     take: take,
+    where: {
+      nom: {
+        contains: filter,
+      },
+    },
   })
 
   const colums = (): JSX.Element => (
@@ -375,17 +405,18 @@ const ListFournisseur: FC = () => {
 }
 
 const FournisseursPage: FC = () => {
+  const [filter, setFilter] = useState("")
   return (
     <AppLayout navbar={fournisseurNavbar()}>
       <Flex padding="1.5">
         <CreateFournisseur />
         <Spacer />
-        {/* <SearchFournisseur /> */}
+        <SearchFournisseur filter={filter} onChange={(value) => setFilter(value)} />
       </Flex>
 
       <Flex padding="1.5">
         <Suspense fallback={<div>Chargement de la liste des fournisseurs...</div>}>
-          <ListFournisseur />
+          <ListFournisseur filter={filter} />
         </Suspense>
       </Flex>
     </AppLayout>

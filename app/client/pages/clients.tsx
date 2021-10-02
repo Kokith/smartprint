@@ -6,6 +6,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
   Button,
   Flex,
   FormControl,
@@ -13,6 +14,8 @@ import {
   FormLabel,
   Icon,
   Input,
+  InputGroup,
+  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -20,6 +23,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
   Table,
   TableCaption,
   Tbody,
@@ -32,7 +36,7 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { ICON_SIZE } from "app/core/styles/theme"
-import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
+import { MdAdd, MdDelete, MdEdit, MdSearch } from "react-icons/md"
 import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
@@ -306,7 +310,29 @@ const DelClient: FC<{ id: number }> = ({ id }) => {
   )
 }
 
-const ListClient: FC = () => {
+const SearchClient: FC<{ filter: string; onChange: (value: string) => void }> = ({
+  filter,
+  onChange,
+}) => {
+  return (
+    <Box>
+      <InputGroup>
+        <InputLeftElement pointerEvents="none">
+          <Icon as={MdSearch} />
+        </InputLeftElement>
+        <Input
+          value={filter}
+          onChange={(e) => onChange(e.target.value)}
+          type="text"
+          placeholder="Rechercher un client"
+          variant="filled"
+        />
+      </InputGroup>
+    </Box>
+  )
+}
+
+const ListClient: FC<{ filter: string }> = ({ filter }) => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
 
@@ -314,6 +340,11 @@ const ListClient: FC = () => {
     orderBy: { id: "desc" },
     skip: take * (page - 1),
     take: take,
+    where: {
+      nom: {
+        contains: filter,
+      },
+    },
   })
 
   const colums = (): JSX.Element => (
@@ -375,15 +406,23 @@ const ListClient: FC = () => {
 }
 
 const ClientsPage: FC = () => {
+  const [filter, setFilter] = useState("")
   return (
     <AppLayout navbar={<Navbar links={[]} />}>
       <Flex padding="1.5">
         <CreateClient />
+        <Spacer />
+        <SearchClient
+          filter={filter}
+          onChange={(value) => {
+            setFilter(value)
+          }}
+        />
       </Flex>
 
       <Flex padding="1.5">
         <Suspense fallback={<div>Chargement de la liste des clients...</div>}>
-          <ListClient />
+          <ListClient filter={filter} />
         </Suspense>
       </Flex>
     </AppLayout>
