@@ -35,9 +35,9 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
-import { FournisseurType } from "db"
+import { Fournisseur, FournisseurType } from "db"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
-import { MdAdd, MdDelete } from "react-icons/md"
+import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { TAKE } from "app/core/configs"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
@@ -47,6 +47,7 @@ import fournisseurs from "../queries/fournisseurs"
 import Pagination from "app/core/components/common/Pagination"
 import createFournisseur from "../mutations/createFournisseur"
 import delFournisseur from "../mutations/delFournisseur"
+import updateFournisseur from "../mutations/updateFournisseur"
 
 type InputKey = keyof DefaultFournisseurInput
 const FormFournisseur: FC<{
@@ -180,6 +181,81 @@ const CreateFournisseur: FC = () => {
   )
 }
 
+const UpdateFournisseur: FC<{ initialData: Fournisseur }> = ({ initialData }) => {
+  const { handleCustomError } = useHandleCustomError()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const [mutate, { isLoading }] = useMutation(updateFournisseur)
+  const toast = useToast()
+
+  const initialValues: DefaultFournisseurInput = {
+    nom: initialData.nom,
+    nif: initialData.nif,
+    stat: initialData.stat,
+    adresse: initialData.adresse,
+    email: initialData.email,
+    contact: initialData.contact,
+    type: initialData.type,
+  }
+  const formik = useFormik({
+    initialValues,
+    validationSchema: DefaultFournisseurSchema,
+    onSubmit: async (values) => {
+      try {
+        await mutate({ id: initialData.id, data: values })
+        toast({
+          title: "Le fournisseur a ete modifier avec succes",
+          status: "success",
+          isClosable: true,
+        })
+        invalidateQuery(fournisseurs)
+      } catch (err) {
+        handleCustomError(err)
+      }
+    },
+  })
+
+  const initialRef = React.useRef<any>()
+  const finalRef = React.useRef<any>()
+
+  return (
+    <Fragment>
+      <Button colorScheme="blue" onClick={onOpen} variant="ghost">
+        <Icon as={MdEdit} width={ICON_SIZE} height={ICON_SIZE} />
+      </Button>
+
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <form onSubmit={formik.handleSubmit}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Modifier un client</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormFournisseur
+                values={formik.values}
+                errors={formik.errors}
+                touched={formik.touched}
+                onChange={(key) => formik.handleChange(key)}
+              />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} type="submit" isLoading={isLoading}>
+                Modifier
+              </Button>
+              <Button onClick={onClose}>Annuler</Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </Fragment>
+  )
+}
+
 const DelFournisseur: FC<{ id: number }> = ({ id }) => {
   const [isOpen, setIsOpen] = useState(false)
   const onClose = (): void => setIsOpen(false)
@@ -274,20 +350,20 @@ const ListFournisseur: FC = () => {
       <TableCaption>{caption()}</TableCaption>
       <Thead>{colums()}</Thead>
       <Tbody>
-        {items.map((c) => {
+        {items.map((f) => {
           return (
-            <Tr key={c.id}>
-              <Td>{c.id}</Td>
-              <Td>{c.nom}</Td>
-              <Td>{c.nif}</Td>
-              <Td>{c.stat}</Td>
-              <Td>{c.adresse}</Td>
-              <Td>{c.email}</Td>
-              <Td>{c.contact}</Td>
-              <Td>{c.type}</Td>
+            <Tr key={f.id}>
+              <Td>{f.id}</Td>
+              <Td>{f.nom}</Td>
+              <Td>{f.nif}</Td>
+              <Td>{f.stat}</Td>
+              <Td>{f.adresse}</Td>
+              <Td>{f.email}</Td>
+              <Td>{f.contact}</Td>
+              <Td>{f.type}</Td>
               <Td>
-                <DelFournisseur id={c.id} />
-                {/* <UpdateClient initialData={c} /> */}
+                <DelFournisseur id={f.id} />
+                <UpdateFournisseur initialData={f} />
               </Td>
             </Tr>
           )
