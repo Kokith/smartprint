@@ -1,6 +1,12 @@
 import React, { FC, Fragment, Suspense, useState } from "react"
 import { fournisseurNavbar } from "app/core/components/layout/Navbar"
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Button,
   Flex,
   FormControl,
@@ -26,11 +32,12 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
 import { FournisseurType } from "db"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
-import { MdAdd } from "react-icons/md"
+import { MdAdd, MdDelete } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { TAKE } from "app/core/configs"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
@@ -39,6 +46,7 @@ import AppLayout from "app/core/components/layout/AppLayout"
 import fournisseurs from "../queries/fournisseurs"
 import Pagination from "app/core/components/common/Pagination"
 import createFournisseur from "../mutations/createFournisseur"
+import delFournisseur from "../mutations/delFournisseur"
 
 type InputKey = keyof DefaultFournisseurInput
 const FormFournisseur: FC<{
@@ -172,6 +180,54 @@ const CreateFournisseur: FC = () => {
   )
 }
 
+const DelFournisseur: FC<{ id: number }> = ({ id }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = (): void => setIsOpen(false)
+  const toast = useToast()
+  const cancelRef = React.useRef<any>()
+
+  const [mutate, { isLoading }] = useMutation(delFournisseur)
+
+  const handleSubmit = async (): Promise<void> => {
+    await mutate({ id })
+    invalidateQuery(fournisseurs)
+    toast({
+      title: "Le fournisseur a ete supprimer avec succes",
+      status: "success",
+      isClosable: true,
+    })
+  }
+
+  return (
+    <Fragment>
+      <Button variant="ghost" onClick={() => setIsOpen(true)}>
+        <Icon as={MdDelete} width={ICON_SIZE} height={ICON_SIZE} color="red" />
+      </Button>
+
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Supprimer un client
+            </AlertDialogHeader>
+
+            <AlertDialogBody>Etes vous sur de vouloir supprimer ce client ?</AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button colorScheme="red" onClick={handleSubmit} mr={3} isLoading={isLoading}>
+                Supprimer
+              </Button>
+              <Button ref={cancelRef} onClick={onClose} marginLeft="">
+                Annuler
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Fragment>
+  )
+}
+
 const ListFournisseur: FC = () => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
@@ -230,9 +286,8 @@ const ListFournisseur: FC = () => {
               <Td>{c.contact}</Td>
               <Td>{c.type}</Td>
               <Td>
-                {/* <DelClient id={c.id} />
-                <UpdateClient initialData={c} /> */}
-                Actions
+                <DelFournisseur id={c.id} />
+                {/* <UpdateClient initialData={c} /> */}
               </Td>
             </Tr>
           )
