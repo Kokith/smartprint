@@ -17,13 +17,13 @@ import { Routes, Link, RouteUrlObject, useRouter } from "blitz"
 
 const SidebarMenuItem: FC<{
   title: string
-  link: RouteUrlObject
+  urlObj: RouteUrlObject
   itemIcon: IconType
-}> = ({ title, itemIcon, link }) => {
+}> = ({ title, itemIcon, urlObj }) => {
   const router = useRouter()
-  const isActive = router.pathname.startsWith(link.pathname) ? true : false
+  const isActive = router.pathname.startsWith(urlObj.pathname) ? true : false
   return (
-    <Link href={link}>
+    <Link href={urlObj}>
       <Flex
         flexDirection="row"
         alignItems="center"
@@ -77,24 +77,24 @@ const Sidebar: FC = () => {
   return (
     <VStack height="full" width="15%" position="fixed" bg="primary">
       <MemoizedSmartPrintTitle />
-      <SidebarMenuItem title="Dashboard" itemIcon={MdDashboard} link={Routes.DashboardPage()} />
-      <SidebarMenuItem title="Stock" itemIcon={FaProductHunt} link={Routes.StockPage()} />
+      <SidebarMenuItem title="Dashboard" itemIcon={MdDashboard} urlObj={Routes.DashboardPage()} />
+      <SidebarMenuItem title="Stock" itemIcon={FaProductHunt} urlObj={Routes.StockPage()} />
       <SidebarMenuItem
         title="Fournisseurs"
         itemIcon={FaCartPlus}
-        link={Routes.FournisseursPage()}
+        urlObj={Routes.FournisseursPage()}
       />
-      <SidebarMenuItem title="Projets" itemIcon={FaProjectDiagram} link={Routes.ProjetsPage()} />
-      <SidebarMenuItem title="Devis" itemIcon={FaCalculator} link={Routes.DevisPage()} />
-      <SidebarMenuItem title="Clients" itemIcon={FaUsers} link={Routes.ClientsPage()} />
-      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} link={Routes.FinancePage()} />
+      <SidebarMenuItem title="Projets" itemIcon={FaProjectDiagram} urlObj={Routes.ProjetsPage()} />
+      <SidebarMenuItem title="Devis" itemIcon={FaCalculator} urlObj={Routes.DevisPage()} />
+      <SidebarMenuItem title="Clients" itemIcon={FaUsers} urlObj={Routes.ClientsPage()} />
+      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} urlObj={Routes.FinancePage()} />
       <SidebarMenuItem
         title="Factures"
         itemIcon={FaMoneyBillWaveAlt}
-        link={Routes.FacturesPage()}
+        urlObj={Routes.FacturesPage()}
       />
       <Spacer />
-      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} link={Routes.ParametrePage()} />
+      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} urlObj={Routes.ParametrePage()} />
     </VStack>
   )
 }

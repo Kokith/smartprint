@@ -21,16 +21,20 @@ enum FournisseurType {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  name           String?
-  email          String   @unique
-  hashedPassword String?
-  role           String   @default("USER")
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  nom       String
+  email     String   @unique
+  contact   String
+  admin     Boolean  @default(false)
+  mdp       String
+  photo     String?
 
   tokens   Token[]
   sessions Session[]
+
+  @@map("user")
 }
 
 model Session {
@@ -73,6 +77,8 @@ model Client {
   adresse String
   email   String
   contact String
+
+  @@map("client")
 }
 
 model Fournisseur {

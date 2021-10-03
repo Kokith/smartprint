@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import Link from "next/link"
+import { RouteUrlObject, Link, Routes } from "blitz"
 import {
   Button,
   Flex,
@@ -19,7 +19,7 @@ import LittleProduits from "../produit/LittleProduits"
 
 interface LinkShape {
   name: string
-  url: string
+  urlObj: RouteUrlObject
 }
 
 interface NavbarItemProps {
@@ -28,10 +28,10 @@ interface NavbarItemProps {
 
 const NavbarItem: FC<NavbarItemProps> = ({ link }) => {
   const router = useRouter()
-  const isActive = router.pathname.startsWith(link.url) ? true : false
+  const isActive = router.pathname.startsWith(link.urlObj.pathname) ? true : false
 
   return (
-    <Link key={link.url} href={link.url} passHref={true}>
+    <Link href={link.urlObj}>
       <Text as="button" marginRight={5} color={isActive ? "secondary" : "white"} fontWeight="bold">
         {link.name}
       </Text>
@@ -54,7 +54,7 @@ const Navbar: FC<Props> = ({ links }) => {
     >
       <Flex>
         {links.map((link) => (
-          <NavbarItem link={link} key={link.url} />
+          <NavbarItem key={link.urlObj.pathname} link={link} />
         ))}
       </Flex>
 
@@ -96,11 +96,11 @@ export const stockNavbar = (): JSX.Element => (
   <Navbar
     links={[
       {
-        url: "/stock/entree-stock",
+        urlObj: Routes.EntreeStockPage(),
         name: "Entree de stock",
       },
       {
-        url: "/stock/sortie-stock",
+        urlObj: Routes.SortieStockPage(),
         name: "Sortie de stock",
       },
     ]}
@@ -111,7 +111,7 @@ export const fournisseurNavbar = (): JSX.Element => (
   <Navbar
     links={[
       {
-        url: "/fournisseurs/commande",
+        urlObj: Routes.CommandePage(),
         name: "Commande",
       },
     ]}
@@ -120,35 +120,39 @@ export const fournisseurNavbar = (): JSX.Element => (
 
 export const parametresNavbar = (): JSX.Element => (
   <Navbar
-    links={[
-      {
-        url: "/parametres/mon-compte",
-        name: "Mon compte",
-      },
-      {
-        url: "/parametres/societe",
-        name: "Societe",
-      },
-      {
-        url: "/parametres/utilisateurs",
-        name: "Utilisateurs",
-      },
-    ]}
+    links={
+      [
+        // {
+        //   urlObj: "/parametres/mon-compte",
+        //   name: "Mon compte",
+        // },
+        // {
+        //   urlObj: "/parametres/societe",
+        //   name: "Societe",
+        // },
+        // {
+        //   urlObj: "/parametres/utilisateurs",
+        //   name: "Utilisateurs",
+        // },
+      ]
+    }
   />
 )
 
 export const financeNavbar = (): JSX.Element => (
   <Navbar
-    links={[
-      {
-        url: "/finance/charges",
-        name: "Charges",
-      },
-      {
-        url: "/finance/comptes",
-        name: "Comptes",
-      },
-    ]}
+    links={
+      [
+        // {
+        //   urlObj: "/finance/charges",
+        //   name: "Charges",
+        // },
+        // {
+        //   urlObj: "/finance/comptes",
+        //   name: "Comptes",
+        // },
+      ]
+    }
   />
 )
 

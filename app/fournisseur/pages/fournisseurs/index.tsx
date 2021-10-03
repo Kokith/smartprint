@@ -46,11 +46,11 @@ import { TAKE } from "app/core/configs"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import AppLayout from "app/core/components/layout/AppLayout"
-import fournisseurs from "../queries/fournisseurs"
+import fournisseurs from "../../queries/fournisseurs"
 import Pagination from "app/core/components/common/Pagination"
-import createFournisseur from "../mutations/createFournisseur"
-import delFournisseur from "../mutations/delFournisseur"
-import updateFournisseur from "../mutations/updateFournisseur"
+import createFournisseur from "../../mutations/createFournisseur"
+import delFournisseur from "../../mutations/delFournisseur"
+import updateFournisseur from "../../mutations/updateFournisseur"
 
 type InputKey = keyof DefaultFournisseurInput
 const FormFournisseur: FC<{
