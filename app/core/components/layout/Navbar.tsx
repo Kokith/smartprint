@@ -120,39 +120,35 @@ export const fournisseurNavbar = (): JSX.Element => (
 
 export const parametresNavbar = (): JSX.Element => (
   <Navbar
-    links={
-      [
-        // {
-        //   urlObj: "/parametres/mon-compte",
-        //   name: "Mon compte",
-        // },
-        // {
-        //   urlObj: "/parametres/societe",
-        //   name: "Societe",
-        // },
-        // {
-        //   urlObj: "/parametres/utilisateurs",
-        //   name: "Utilisateurs",
-        // },
-      ]
-    }
+    links={[
+      {
+        urlObj: Routes.MonComptePage(),
+        name: "Mon compte",
+      },
+      {
+        urlObj: Routes.SocietePage(),
+        name: "Societe",
+      },
+      {
+        urlObj: Routes.UtilisateursPage(),
+        name: "Utilisateurs",
+      },
+    ]}
   />
 )
 
 export const financeNavbar = (): JSX.Element => (
   <Navbar
-    links={
-      [
-        // {
-        //   urlObj: "/finance/charges",
-        //   name: "Charges",
-        // },
-        // {
-        //   urlObj: "/finance/comptes",
-        //   name: "Comptes",
-        // },
-      ]
-    }
+    links={[
+      {
+        urlObj: Routes.ChargesPage(),
+        name: "Charges",
+      },
+      {
+        urlObj: Routes.ComptesPage(),
+        name: "Comptes",
+      },
+    ]}
   />
 )
 
