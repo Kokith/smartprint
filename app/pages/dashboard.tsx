@@ -1,9 +1,10 @@
-import { FC } from "react"
+import React from "react"
 import { Flex, Spacer } from "@chakra-ui/react"
+import { BlitzPage, Routes } from "blitz"
 import AppLayout from "app/core/components/layout/AppLayout"
 import Navbar from "app/core/components/layout/Navbar"
 
-const DashboardPage: FC = () => {
+const DashboardPage: BlitzPage = () => {
   return (
     <AppLayout navbar={<Navbar links={[]} />}>
       <Flex padding="1.5">
@@ -14,5 +15,7 @@ const DashboardPage: FC = () => {
     </AppLayout>
   )
 }
+
+DashboardPage.authenticate = true
 
 export default DashboardPage

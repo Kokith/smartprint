@@ -1,6 +1,14 @@
 import { FournisseurType } from "db"
 import * as yup from "yup"
 
+// user
+
+export const LoginSchema = yup.object({
+  email: yup.string().email().required(),
+  mdp: yup.string().required(),
+})
+export type LoginInput = yup.InferType<typeof LoginSchema>
+
 // client
 
 export const DefaultClientSchema = yup.object({

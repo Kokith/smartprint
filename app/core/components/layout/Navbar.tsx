@@ -1,5 +1,5 @@
 import React, { FC } from "react"
-import { RouteUrlObject, Link, Routes } from "blitz"
+import { RouteUrlObject, Link, Routes, useMutation, Router } from "blitz"
 import {
   Button,
   Flex,
@@ -16,6 +16,7 @@ import { FaUser } from "react-icons/fa"
 import { ICON_SIZE } from "../../styles/theme"
 import { useRouter } from "next/router"
 import LittleProduits from "../produit/LittleProduits"
+import logout from "app/auth/mutations/logout"
 
 interface LinkShape {
   name: string
@@ -44,6 +45,14 @@ interface Props {
 }
 
 const Navbar: FC<Props> = ({ links }) => {
+  const [mutate, { isLoading }] = useMutation(logout)
+
+  const handleLogout = () => {
+    mutate().then(() => {
+      Router.replace(Routes.LoginPage().pathname)
+    })
+  }
+
   return (
     <Flex
       height="100%"
@@ -76,13 +85,7 @@ const Navbar: FC<Props> = ({ links }) => {
         <Menu>
           <MenuButton as={Button}>...</MenuButton>
           <MenuList>
-            <MenuItem
-              onClick={() => {
-                //
-              }}
-              justifyContent="center"
-              fontWeight="bold"
-            >
+            <MenuItem onClick={handleLogout} justifyContent="center" fontWeight="bold">
               Se deconnecter
             </MenuItem>
           </MenuList>

@@ -13,6 +13,31 @@ faker.locale = "fr"
 const fakeNb = 25
 
 const seed = async () => {
+  // user
+  await db.user.create({
+    data: {
+      nom: "Joel Olivier",
+      email: "joel@email.com",
+      contact: "+ 0325846985",
+      role: "ADMIN",
+      mdp: "joelmdp",
+    },
+  })
+  for (let i = 0; i < fakeNb; i++) {
+    const nom = faker.name.findName()
+    if (nom !== "Joel Olivier") {
+      await db.user.create({
+        data: {
+          nom,
+          email: `${nom}@email.com`,
+          contact: faker.phone.phoneNumber(),
+          role: "USER",
+          mdp: faker.internet.password(),
+        },
+      })
+    }
+  }
+
   // fournisseur
   for (let i = 0; i < fakeNb; i++) {
     const nom = faker.name.findName()
@@ -27,31 +52,6 @@ const seed = async () => {
         type: "IMPORT",
       },
     })
-  }
-
-  // user
-  await db.user.create({
-    data: {
-      nom: "Joel Olivier",
-      email: "joel@email.com",
-      contact: "+ 0325846985",
-      admin: true,
-      mdp: "joelmdp",
-    },
-  })
-  for (let i = 0; i < fakeNb; i++) {
-    const nom = faker.name.findName()
-    if (nom !== "Joel Olivier") {
-      await db.user.create({
-        data: {
-          nom,
-          email: `${nom}@email.com`,
-          contact: faker.phone.phoneNumber(),
-          admin: false,
-          mdp: faker.internet.password(),
-        },
-      })
-    }
   }
 }
 

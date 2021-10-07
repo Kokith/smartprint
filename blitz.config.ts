@@ -3,7 +3,8 @@ import { BlitzConfig, sessionMiddleware, simpleRolesIsAuthorized } from "blitz"
 const config: BlitzConfig = {
   middleware: [
     sessionMiddleware({
-      cookiePrefix: "monolithic",
+      cookiePrefix: "monolithic-smartprint",
+      sessionExpiryMinutes: 1,
       isAuthorized: simpleRolesIsAuthorized,
     }),
   ],

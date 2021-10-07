@@ -9,7 +9,7 @@ import {
 } from "blitz"
 import { ChakraProvider } from "@chakra-ui/react"
 import theme from "app/core/styles/theme"
-import LoginPage from "app/user/pages/login"
+import LoginPage from "app/auth/pages/login"
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
@@ -28,7 +28,7 @@ export default function App({ Component, pageProps }: AppProps) {
 
 function RootErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
   if (error instanceof AuthenticationError) {
-    return <LoginPage />
+    return <LoginPage onSuccess={resetErrorBoundary} />
   } else if (error instanceof AuthorizationError) {
     return (
       <ErrorComponent

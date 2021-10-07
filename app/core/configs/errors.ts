@@ -8,6 +8,26 @@ export class InputError extends Error {
 }
 superjson.registerClass(InputError)
 
+// user
+
+export class UserNotFoundError extends Error {
+  name = "UserNotFoundError"
+  constructor() {
+    super()
+  }
+}
+superjson.registerClass(UserNotFoundError)
+
+export class IncorrectCredentialError extends Error {
+  name = "IncorrectCredentialError"
+  constructor() {
+    super()
+  }
+}
+superjson.registerClass(IncorrectCredentialError)
+
+// client
+
 export class ClientAlreadyExistError extends Error {
   name = "ClientAlreadyExistError"
   info: any
@@ -17,6 +37,8 @@ export class ClientAlreadyExistError extends Error {
   }
 }
 superjson.registerClass(ClientAlreadyExistError)
+
+// fournisseur
 
 export class FournisseurAlreadyExistError extends Error {
   name = "FournisseurAlreadyExistError"
