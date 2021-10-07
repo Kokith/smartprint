@@ -1,12 +1,12 @@
 import { Ctx } from "blitz"
-import db from "db"
+import db, { User } from "db"
 
-export default async function getCurrentUser(_ = null, { session }: Ctx) {
-  if (!session.userId) return null
+export default async function getCurrentUser(_ = null, ctx: Ctx) {
+  ctx.session.$authorize()
 
   const user = await db.user.findFirst({
-    where: { id: session.userId },
+    where: { id: ctx.session.userId },
   })
 
-  return user
+  return user as User
 }

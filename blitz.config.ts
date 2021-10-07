@@ -4,7 +4,7 @@ const config: BlitzConfig = {
   middleware: [
     sessionMiddleware({
       cookiePrefix: "monolithic-smartprint",
-      sessionExpiryMinutes: 1,
+      sessionExpiryMinutes: 10080,
       isAuthorized: simpleRolesIsAuthorized,
     }),
   ],

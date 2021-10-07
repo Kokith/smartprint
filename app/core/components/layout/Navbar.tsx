@@ -1,5 +1,5 @@
-import React, { FC } from "react"
-import { RouteUrlObject, Link, Routes, useMutation, Router } from "blitz"
+import React, { FC, Fragment, Suspense } from "react"
+import { RouteUrlObject, Link, Routes, useMutation, useQuery, Router } from "blitz"
 import {
   Button,
   Flex,
@@ -17,17 +17,16 @@ import { ICON_SIZE } from "../../styles/theme"
 import { useRouter } from "next/router"
 import LittleProduits from "../produit/LittleProduits"
 import logout from "app/auth/mutations/logout"
+import getCurrentUser from "app/user/queries/getCurrentUser"
 
 interface LinkShape {
   name: string
   urlObj: RouteUrlObject
 }
 
-interface NavbarItemProps {
+const NavbarItem: FC<{
   link: LinkShape
-}
-
-const NavbarItem: FC<NavbarItemProps> = ({ link }) => {
+}> = ({ link }) => {
   const router = useRouter()
   const isActive = router.pathname.startsWith(link.urlObj.pathname) ? true : false
 
@@ -40,12 +39,39 @@ const NavbarItem: FC<NavbarItemProps> = ({ link }) => {
   )
 }
 
-interface Props {
-  links: LinkShape[]
+const RightItemsFallback: FC = () => {
+  return (
+    <Flex alignItems="center" justifyContent="space-between" minWidth={250}>
+      <LittleProduits />
+
+      {false ? (
+        <Image
+          borderRadius={"full"}
+          objectFit="contain"
+          boxSize="50px"
+          src={""}
+          fallback={<Skeleton height="10px" />}
+          alt="utilisateur photo"
+        />
+      ) : (
+        <Icon as={FaUser} w={ICON_SIZE} h={ICON_SIZE} color="white" />
+      )}
+
+      <Menu>
+        <MenuButton as={Button}>...</MenuButton>
+        <MenuList>
+          <MenuItem justifyContent="center" fontWeight="bold">
+            Se deconnecter
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </Flex>
+  )
 }
 
-const Navbar: FC<Props> = ({ links }) => {
-  const [mutate, { isLoading }] = useMutation(logout)
+const RightItems: FC = () => {
+  const [user] = useQuery(getCurrentUser, null)
+  const [mutate] = useMutation(logout)
 
   const handleLogout = () => {
     mutate().then(() => {
@@ -53,6 +79,38 @@ const Navbar: FC<Props> = ({ links }) => {
     })
   }
 
+  return (
+    <Flex alignItems="center" justifyContent="space-between" minWidth={250}>
+      <LittleProduits />
+
+      {false ? (
+        <Image
+          borderRadius={"full"}
+          objectFit="contain"
+          boxSize="50px"
+          src={""}
+          fallback={<Skeleton height="10px" />}
+          alt="utilisateur photo"
+        />
+      ) : (
+        <Icon as={FaUser} w={ICON_SIZE} h={ICON_SIZE} color="white" />
+      )}
+
+      <Menu>
+        <MenuButton as={Button}>{user.nom.toUpperCase()}</MenuButton>
+        <MenuList>
+          <MenuItem onClick={handleLogout} justifyContent="center" fontWeight="bold">
+            Se deconnecter
+          </MenuItem>
+        </MenuList>
+      </Menu>
+    </Flex>
+  )
+}
+
+const Navbar: FC<{
+  links: LinkShape[]
+}> = ({ links }) => {
   return (
     <Flex
       height="100%"
@@ -67,30 +125,9 @@ const Navbar: FC<Props> = ({ links }) => {
         ))}
       </Flex>
 
-      <Flex alignItems="center" justifyContent="space-between" w={250}>
-        <LittleProduits />
-        {false ? (
-          <Image
-            borderRadius={"full"}
-            objectFit="contain"
-            boxSize="50px"
-            src={""}
-            fallback={<Skeleton height="10px" />}
-            alt="utilisateur photo"
-          />
-        ) : (
-          <Icon as={FaUser} w={ICON_SIZE} h={ICON_SIZE} color="white" />
-        )}
-
-        <Menu>
-          <MenuButton as={Button}>...</MenuButton>
-          <MenuList>
-            <MenuItem onClick={handleLogout} justifyContent="center" fontWeight="bold">
-              Se deconnecter
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </Flex>
+      <Suspense fallback={<RightItemsFallback />}>
+        <RightItems />
+      </Suspense>
     </Flex>
   )
 }

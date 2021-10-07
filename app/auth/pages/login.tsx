@@ -109,4 +109,6 @@ const LoginPage: BlitzPage<LoginPageProps> = (props) => {
   )
 }
 
+LoginPage.redirectAuthenticatedTo = Routes.DashboardPage()
+
 export default LoginPage

@@ -1,7 +1,7 @@
+import db, { User } from "db"
 import { IncorrectCredentialError, InputError, UserNotFoundError } from "app/core/configs/errors"
 import { LoginInput, LoginSchema } from "app/core/libs/yup"
 import { Ctx } from "blitz"
-import db, { User } from "db"
 
 export default async function login(input: LoginInput, ctx: Ctx): Promise<User> {
   try {
