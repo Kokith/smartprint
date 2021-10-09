@@ -26,6 +26,14 @@ export class IncorrectCredentialError extends Error {
 }
 superjson.registerClass(IncorrectCredentialError)
 
+export class UserAlreadyExistError extends Error {
+  name = "UserAlreadyExistError"
+  constructor() {
+    super()
+  }
+}
+superjson.registerClass(UserAlreadyExistError)
+
 // client
 
 export class ClientAlreadyExistError extends Error {
@@ -46,5 +54,14 @@ export class FournisseurAlreadyExistError extends Error {
   constructor(args: { info: any }) {
     super()
     this.info = args.info
+  }
+}
+
+// societe
+
+export class SocieteNotFoundError extends Error {
+  name = "SocieteNotFoundError"
+  constructor() {
+    super()
   }
 }

@@ -4,6 +4,7 @@ import {
   FournisseurAlreadyExistError,
   IncorrectCredentialError,
   InputError,
+  UserAlreadyExistError,
   UserNotFoundError,
 } from "../configs/errors"
 
@@ -39,6 +40,12 @@ export const useHandleCustomError = () => {
       } else if (err instanceof IncorrectCredentialError) {
         toast({
           title: "Le mot de passe est incorrecte",
+          status: "error",
+          isClosable: true,
+        })
+      } else if (err instanceof UserAlreadyExistError) {
+        toast({
+          title: "L'utilisateur existe deja",
           status: "error",
           isClosable: true,
         })
