@@ -13,6 +13,18 @@ faker.locale = "fr"
 const fakeNb = 25
 
 const seed = async () => {
+  // create societe
+  const societe = await db.societe.create({
+    data: {
+      gerant: "Jean De Dieu",
+      adresse: "Antanimena",
+      banque: "num banque",
+      mobile: "num mobile",
+      rcs: "num rcs",
+      stat: "num stat",
+    },
+  })
+
   // user
   await db.user.create({
     data: {
@@ -21,6 +33,7 @@ const seed = async () => {
       contact: "+ 0325846985",
       role: "ADMIN",
       mdp: "joelmdp",
+      societeId: societe.id,
     },
   })
   for (let i = 0; i < fakeNb; i++) {
@@ -33,6 +46,7 @@ const seed = async () => {
           contact: faker.phone.phoneNumber(),
           role: "USER",
           mdp: faker.internet.password(),
+          societeId: societe.id,
         },
       })
     }

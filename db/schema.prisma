@@ -23,6 +23,8 @@ enum FournisseurType {
 enum UserRole {
   ADMIN
   USER
+
+  @@map("user_role")
 }
 
 model User {
@@ -35,6 +37,10 @@ model User {
   role      UserRole @default(USER)
   mdp       String
   photo     String?
+
+  societeId Int
+  societe   Societe @relation(fields: [societeId], references: [id])
+
 
   tokens   Token[]
   sessions Session[]
@@ -72,6 +78,21 @@ model Token {
   userId Int
 
   @@unique([hashedToken, type])
+}
+
+model Societe {
+  id        Int     @id @default(autoincrement())
+  gerant    String
+  adresse   String
+  banque    String
+  mobile    String
+  signature String?
+  rcs       String
+  stat      String
+
+  users User[]
+
+  @@map("societe")
 }
 
 model Client {
