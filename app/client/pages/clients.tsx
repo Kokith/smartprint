@@ -349,7 +349,6 @@ const ListClient: FC<{ filter: string }> = ({ filter }) => {
 
   const colums = (): JSX.Element => (
     <Tr>
-      <Th>Identifiant</Th>
       <Th>Nom</Th>
       <Th>Nif</Th>
       <Th>Stat</Th>
@@ -385,7 +384,6 @@ const ListClient: FC<{ filter: string }> = ({ filter }) => {
         {items.map((c) => {
           return (
             <Tr key={c.id}>
-              <Td>{c.id}</Td>
               <Td>{c.nom}</Td>
               <Td>{c.nif}</Td>
               <Td>{c.stat}</Td>

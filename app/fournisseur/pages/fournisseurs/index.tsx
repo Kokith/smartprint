@@ -346,7 +346,6 @@ const ListFournisseur: FC<{ filter: string }> = ({ filter }) => {
 
   const colums = (): JSX.Element => (
     <Tr>
-      <Th>Identifiant</Th>
       <Th>Nom</Th>
       <Th>Nif</Th>
       <Th>Stat</Th>
@@ -383,7 +382,6 @@ const ListFournisseur: FC<{ filter: string }> = ({ filter }) => {
         {items.map((f) => {
           return (
             <Tr key={f.id}>
-              <Td>{f.id}</Td>
               <Td>{f.nom}</Td>
               <Td>{f.nif}</Td>
               <Td>{f.stat}</Td>
