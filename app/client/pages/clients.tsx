@@ -6,7 +6,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Box,
   Button,
   Flex,
   FormControl,
@@ -14,8 +13,6 @@ import {
   FormLabel,
   Icon,
   Input,
-  InputGroup,
-  InputLeftElement,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -36,7 +33,7 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import { ICON_SIZE } from "app/core/styles/theme"
-import { MdAdd, MdDelete, MdEdit, MdSearch } from "react-icons/md"
+import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
 import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
@@ -50,6 +47,7 @@ import Pagination from "app/core/components/common/Pagination"
 import clients from "../queries/clients"
 import delClient from "../mutations/delClients"
 import updateClient from "../mutations/updateClient"
+import DefaultSearch from "app/core/components/DefaultSearch"
 
 const FormClient: FC<{
   values: DefaultClientInput
@@ -310,28 +308,6 @@ const DelClient: FC<{ id: number }> = ({ id }) => {
   )
 }
 
-const SearchClient: FC<{ filter: string; onChange: (value: string) => void }> = ({
-  filter,
-  onChange,
-}) => {
-  return (
-    <Box>
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <Icon as={MdSearch} />
-        </InputLeftElement>
-        <Input
-          value={filter}
-          onChange={(e) => onChange(e.target.value)}
-          type="text"
-          placeholder="Rechercher un client"
-          variant="filled"
-        />
-      </InputGroup>
-    </Box>
-  )
-}
-
 const ListClient: FC<{ filter: string }> = ({ filter }) => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
@@ -410,7 +386,8 @@ const ClientsPage: FC = () => {
       <Flex padding="1.5">
         <CreateClient />
         <Spacer />
-        <SearchClient
+        <DefaultSearch
+          name="client"
           filter={filter}
           onChange={(value) => {
             setFilter(value)

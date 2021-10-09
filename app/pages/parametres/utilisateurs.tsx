@@ -25,9 +25,6 @@ import {
   ModalBody,
   ModalFooter,
   Select,
-  Box,
-  InputGroup,
-  InputLeftElement,
 } from "@chakra-ui/react"
 import { parametresNavbar } from "app/core/components/layout/Navbar"
 import { TAKE } from "app/core/configs"
@@ -35,13 +32,14 @@ import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
 import { CreateUserInput, CreateUserSchema } from "app/core/libs/yup"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
+import { MdAdd } from "react-icons/md"
+import { ICON_SIZE } from "app/core/styles/theme"
+import { UserRole } from "db"
 import AppLayout from "app/core/components/layout/AppLayout"
 import users from "app/user/queries/users"
 import Pagination from "app/core/components/common/Pagination"
 import createUser from "app/user/mutations/createUser"
-import { MdAdd, MdSearch } from "react-icons/md"
-import { ICON_SIZE } from "app/core/styles/theme"
-import { UserRole } from "db"
+import DefaultSearch from "app/core/components/DefaultSearch"
 
 const FormCreateUser: FC<{
   values: CreateUserInput
@@ -181,28 +179,6 @@ const CreateUser: FC = () => {
   )
 }
 
-const SearchUser: FC<{ filter: string; onChange: (value: string) => void }> = ({
-  filter,
-  onChange,
-}) => {
-  return (
-    <Box>
-      <InputGroup>
-        <InputLeftElement pointerEvents="none">
-          <Icon as={MdSearch} />
-        </InputLeftElement>
-        <Input
-          value={filter}
-          onChange={(e) => onChange(e.target.value)}
-          type="text"
-          placeholder="Rechercher un utilisateur"
-          variant="filled"
-        />
-      </InputGroup>
-    </Box>
-  )
-}
-
 const ListUsers: FC<{ filter: string }> = ({ filter }) => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
@@ -279,7 +255,7 @@ const UtilisateursPage: FC = () => {
       <Flex padding="1.5">
         <CreateUser />
         <Spacer />
-        <SearchUser filter={filter} onChange={(value) => setFilter(value)} />
+        <DefaultSearch name="utilisateur" filter={filter} onChange={(value) => setFilter(value)} />
       </Flex>
 
       <Flex padding="1.5">
