@@ -25,6 +25,13 @@ import {
   ModalBody,
   ModalFooter,
   Select,
+  useToast,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from "@chakra-ui/react"
 import { parametresNavbar } from "app/core/components/layout/Navbar"
 import { TAKE } from "app/core/configs"
@@ -32,7 +39,7 @@ import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"
 import { CreateUserInput, CreateUserSchema } from "app/core/libs/yup"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
-import { MdAdd } from "react-icons/md"
+import { MdAdd, MdDelete } from "react-icons/md"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { UserRole } from "db"
 import AppLayout from "app/core/components/layout/AppLayout"
@@ -40,6 +47,7 @@ import users from "app/user/queries/users"
 import Pagination from "app/core/components/common/Pagination"
 import createUser from "app/user/mutations/createUser"
 import DefaultSearch from "app/core/components/DefaultSearch"
+import delUser from "app/user/mutations/delUser"
 
 const FormCreateUser: FC<{
   values: CreateUserInput
@@ -179,6 +187,54 @@ const CreateUser: FC = () => {
   )
 }
 
+const DelUser: FC<{ id: number }> = ({ id }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const onClose = (): void => setIsOpen(false)
+  const toast = useToast()
+  const cancelRef = React.useRef<any>()
+
+  const [mutate, { isLoading }] = useMutation(delUser)
+
+  const handleSubmit = async (): Promise<void> => {
+    await mutate({ id })
+    invalidateQuery(users)
+    toast({
+      title: "L'utilisateur a ete supprimer avec succes",
+      status: "success",
+      isClosable: true,
+    })
+  }
+
+  return (
+    <Fragment>
+      <Button variant="ghost" onClick={() => setIsOpen(true)}>
+        <Icon as={MdDelete} width={ICON_SIZE} height={ICON_SIZE} color="red" />
+      </Button>
+
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Supprimer un utilisateur
+            </AlertDialogHeader>
+
+            <AlertDialogBody>Etes vous sur de vouloir supprimer cet utilisateur ?</AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button colorScheme="red" onClick={handleSubmit} mr={3} isLoading={isLoading}>
+                Supprimer
+              </Button>
+              <Button ref={cancelRef} onClick={onClose} marginLeft="">
+                Annuler
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Fragment>
+  )
+}
+
 const ListUsers: FC<{ filter: string }> = ({ filter }) => {
   const [page, setPage] = useState(1)
   const [take, setTake] = useState(TAKE[0] as number)
@@ -226,17 +282,15 @@ const ListUsers: FC<{ filter: string }> = ({ filter }) => {
       <TableCaption>{caption()}</TableCaption>
       <Thead>{colums()}</Thead>
       <Tbody>
-        {items.map((c) => {
+        {items.map((u) => {
           return (
-            <Tr key={c.id}>
-              <Td>{c.nom}</Td>
-              <Td>{c.email}</Td>
-              <Td>{c.contact}</Td>
-              <Td>{c.role}</Td>
+            <Tr key={u.id}>
+              <Td>{u.nom}</Td>
+              <Td>{u.email}</Td>
+              <Td>{u.contact}</Td>
+              <Td>{u.role}</Td>
               <Td>
-                {/* <DelClient id={c.id} />
-                <UpdateClient initialData={c} /> */}
-                actions
+                <DelUser id={u.id} />
               </Td>
             </Tr>
           )

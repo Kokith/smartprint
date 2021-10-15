@@ -17,7 +17,7 @@ const DefaultSearch: FC<{ name: string; filter: string; onChange: (value: string
           value={filter}
           onChange={(e) => onChange(e.target.value)}
           type="text"
-          placeholder={`Rechercher un ${name.toLowerCase()}`}
+          placeholder={`Rechercher ${name.toLowerCase()}`}
           variant="filled"
         />
       </InputGroup>
