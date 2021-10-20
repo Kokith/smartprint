@@ -34,7 +34,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
-import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
+import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/fournisseur/validation"
 import { Fournisseur, FournisseurType } from "db"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md"

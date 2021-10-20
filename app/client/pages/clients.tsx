@@ -34,7 +34,7 @@ import {
 } from "@chakra-ui/react"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { MdAdd, MdDelete, MdEdit } from "react-icons/md"
-import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
+import { DefaultClientInput, DefaultClientSchema } from "app/client/validation"
 import { FormikErrors, FormikTouched, useFormik } from "formik"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import { invalidateQuery, useMutation, usePaginatedQuery } from "blitz"

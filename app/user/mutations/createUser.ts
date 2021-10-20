@@ -1,5 +1,5 @@
 import { InputError, UserAlreadyExistError } from "app/core/configs/errors"
-import { CreateUserInput, CreateUserSchema } from "app/core/libs/yup"
+import { CreateUserInput, CreateUserSchema } from "app/user/validation"
 import { getSociete } from "app/societe/societe.service"
 import db, { User } from "db"
 

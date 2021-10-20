@@ -1,5 +1,6 @@
 import db from "./index"
 import faker from "faker"
+import { Societe } from ".prisma/client"
 
 /*
  * This seed function is executed when you run `blitz db seed`.
@@ -12,8 +13,7 @@ import faker from "faker"
 faker.locale = "fr"
 const fakeNb = 25
 
-const seed = async () => {
-  // create societe
+async function societeSeed() {
   const societe = await db.societe.create({
     data: {
       gerant: "Jean De Dieu",
@@ -24,8 +24,10 @@ const seed = async () => {
       stat: "num stat",
     },
   })
+  return societe
+}
 
-  // user
+async function userSeed(args: { societe: Societe }) {
   await db.user.create({
     data: {
       nom: "Joel Olivier",
@@ -33,7 +35,7 @@ const seed = async () => {
       contact: "+ 0325846985",
       role: "ADMIN",
       mdp: "joelmdp",
-      societeId: societe.id,
+      societeId: args.societe.id,
     },
   })
   for (let i = 0; i < fakeNb; i++) {
@@ -42,17 +44,18 @@ const seed = async () => {
       await db.user.create({
         data: {
           nom,
-          email: `${nom}@email.com`,
+          email: `${nom.replace(/ +/g, "")}@email.com`,
           contact: faker.phone.phoneNumber(),
           role: "USER",
           mdp: faker.internet.password(),
-          societeId: societe.id,
+          societeId: args.societe.id,
         },
       })
     }
   }
+}
 
-  // fournisseur
+async function fournisseurSeed() {
   for (let i = 0; i < fakeNb; i++) {
     const nom = faker.name.findName()
     await db.fournisseur.create({
@@ -67,6 +70,14 @@ const seed = async () => {
       },
     })
   }
+}
+
+const seed = async () => {
+  const societe = await societeSeed()
+
+  await userSeed({ societe })
+
+  await fournisseurSeed()
 }
 
 export default seed

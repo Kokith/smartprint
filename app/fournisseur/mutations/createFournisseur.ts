@@ -1,5 +1,5 @@
 import db, { Fournisseur } from "db"
-import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/core/libs/yup"
+import { DefaultFournisseurInput, DefaultFournisseurSchema } from "app/fournisseur/validation"
 import { FournisseurAlreadyExistError, InputError } from "app/core/configs/errors"
 
 const createFournisseur = async (input: DefaultFournisseurInput) => {

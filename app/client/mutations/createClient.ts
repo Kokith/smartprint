@@ -1,6 +1,6 @@
 import db, { Client } from "db"
 import { Ctx } from "blitz"
-import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
+import { DefaultClientInput, DefaultClientSchema } from "app/client/validation"
 import { ClientAlreadyExistError, InputError } from "app/core/configs/errors"
 
 export default async function createClient(input: DefaultClientInput, ctx: Ctx): Promise<Client> {

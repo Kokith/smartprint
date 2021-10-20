@@ -15,7 +15,7 @@ import {
 import { BiHide, BiShow } from "react-icons/bi"
 import { useMutation, Router, Routes, BlitzPage } from "blitz"
 import { useFormik } from "formik"
-import { LoginInput, LoginSchema } from "app/core/libs/yup"
+import { LoginInput, LoginSchema } from "app/user/validation"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import login from "../../auth/mutations/login"
 

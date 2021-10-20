@@ -16,21 +16,17 @@ enum FournisseurType {
   IMPORT
   DIVERS
   LOCAL
-
-  @@map("fournisseur_type")
 }
 
 enum UserRole {
   ADMIN
   USER
-
-  @@map("user_role")
 }
 
 model User {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   nom       String
   email     String   @unique
   contact   String
@@ -91,8 +87,6 @@ model Societe {
   stat      String
 
   users User[]
-
-  @@map("societe")
 }
 
 model Client {
@@ -103,8 +97,6 @@ model Client {
   adresse String
   email   String
   contact String
-
-  @@map("client")
 }
 
 model Fournisseur {
@@ -116,8 +108,6 @@ model Fournisseur {
   email   String
   contact String
   type    FournisseurType
-
-  @@map("fournisseur")
 }
 
 // NOTE: It's highly recommended to use an enum for the token type

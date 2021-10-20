@@ -1,5 +1,5 @@
 import { FournisseurAlreadyExistError } from "app/core/configs/errors"
-import { DefaultFournisseurInput } from "app/core/libs/yup"
+import { DefaultFournisseurInput } from "app/fournisseur/validation"
 import db, { Fournisseur } from "db"
 
 const updateFournisseur = async (input: { id: number; data: DefaultFournisseurInput }) => {

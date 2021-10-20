@@ -1,5 +1,5 @@
 import db, { Client } from "db"
-import { DefaultClientInput, DefaultClientSchema } from "app/core/libs/yup"
+import { DefaultClientInput, DefaultClientSchema } from "app/client/validation"
 import { ClientAlreadyExistError, InputError } from "app/core/configs/errors"
 
 const updateClient = async (input: { id: number; data: DefaultClientInput }) => {
