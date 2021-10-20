@@ -22,6 +22,7 @@ async function societeSeed() {
       mobile: "num mobile",
       rcs: "num rcs",
       stat: "num stat",
+      nif: "num nif",
     },
   })
   return societe
