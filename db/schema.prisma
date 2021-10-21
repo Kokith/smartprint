@@ -40,8 +40,6 @@ model User {
 
   tokens   Token[]
   sessions Session[]
-
-  @@map("user")
 }
 
 model Session {
