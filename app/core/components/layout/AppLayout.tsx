@@ -94,7 +94,7 @@ const Sidebar: FC = () => {
         urlObj={Routes.FacturesPage()}
       />
       <Spacer />
-      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} urlObj={Routes.ParametrePage()} />
+      <SidebarMenuItem title="Parametres" itemIcon={MdSettings} urlObj={Routes.MonComptePage()} />
     </VStack>
   )
 }
