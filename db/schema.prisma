@@ -85,7 +85,8 @@ model Societe {
   stat      String
   nif       String
 
-  users User[]
+  users   User[]
+  charges Charge[]
 }
 
 model Client {
@@ -107,6 +108,17 @@ model Fournisseur {
   email   String
   contact String
   type    FournisseurType
+}
+
+model Charge {
+  id          Int      @id @default(autoincrement())
+  designation String
+  description String
+  prix        Int
+  date        DateTime @default(now())
+
+  societeId Int
+  societe   Societe @relation(fields: [societeId], references: [id])
 }
 
 // NOTE: It's highly recommended to use an enum for the token type
