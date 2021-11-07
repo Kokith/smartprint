@@ -115,7 +115,7 @@ model Charge {
   designation String
   description String
   prix        Int
-  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   societeId Int
   societe   Societe @relation(fields: [societeId], references: [id])

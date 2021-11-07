@@ -73,12 +73,27 @@ async function fournisseurSeed() {
   }
 }
 
+async function chargeSeed(args: { societe: Societe }) {
+  for (let i = 0; i < fakeNb; i++) {
+    await db.charge.create({
+      data: {
+        designation: faker.commerce.productName(),
+        description: "super charge",
+        prix: Number(faker.commerce.price(10000)),
+        societeId: args.societe.id,
+      },
+    })
+  }
+}
+
 const seed = async () => {
   const societe = await societeSeed()
 
   await userSeed({ societe })
 
   await fournisseurSeed()
+
+  await chargeSeed({ societe })
 }
 
 export default seed
