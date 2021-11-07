@@ -1,6 +1,6 @@
 import React from "react"
 import { Flex, Spacer } from "@chakra-ui/react"
-import { BlitzPage, Routes } from "blitz"
+import { BlitzPage } from "blitz"
 import AppLayout from "app/core/components/layout/AppLayout"
 import Navbar from "app/core/components/layout/Navbar"
 
