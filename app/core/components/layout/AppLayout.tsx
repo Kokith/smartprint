@@ -87,7 +87,7 @@ const Sidebar: FC = () => {
       <SidebarMenuItem title="Projets" itemIcon={FaProjectDiagram} urlObj={Routes.ProjetsPage()} />
       <SidebarMenuItem title="Devis" itemIcon={FaCalculator} urlObj={Routes.DevisPage()} />
       <SidebarMenuItem title="Clients" itemIcon={FaUsers} urlObj={Routes.ClientsPage()} />
-      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} urlObj={Routes.FinancePage()} />
+      <SidebarMenuItem title="Finances" itemIcon={BsGraphUp} urlObj={Routes.ChargesPage()} />
       <SidebarMenuItem
         title="Factures"
         itemIcon={FaMoneyBillWaveAlt}
