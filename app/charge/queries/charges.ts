@@ -9,7 +9,8 @@ const charges = async ({ where, orderBy, skip, take }: ChargesInput, ctx: Ctx) =
     skip,
     take,
     count: () => db.charge.count({ where }),
-    query: (paginateArgs) => db.charge.findMany({ ...paginateArgs, where, orderBy }),
+    query: (paginateArgs) =>
+      db.charge.findMany({ ...paginateArgs, where, orderBy: { ...orderBy, id: "desc" } }),
   })
 
   return {
