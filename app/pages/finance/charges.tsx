@@ -1,4 +1,4 @@
-import React, { FC, Suspense } from "react"
+import React, { FC, Suspense, useState } from "react"
 import {
   Flex,
   Spacer,
@@ -19,8 +19,12 @@ import charges from "app/charge/queries/charges"
 import Pagination from "app/core/components/common/Pagination"
 
 const ListCharge: FC = () => {
-  const [data] = useQuery(charges, {
-    take: 5,
+  const [take, setTake] = useState<number>(TAKE[0] as number)
+  const [page, setPage] = useState(1)
+
+  const [{ items, count }] = useQuery(charges, {
+    take,
+    skip: take * (page - 1),
   })
 
   const colums = (): JSX.Element => (
@@ -35,20 +39,20 @@ const ListCharge: FC = () => {
 
   const caption = (): JSX.Element => (
     <Flex justifyContent="space-between">
-      {data && (
+      {items && (
         <Pagination
           curPage={1}
-          pageCount={1}
-          take={TAKE[0]}
+          pageCount={count / take}
+          take={take}
           onTakeChange={(value) => {
-            // setTake(value)
+            setTake(value)
           }}
           onPageChange={(pageObj) => {
-            // setPage(pageObj.selected + 1)
+            setPage(pageObj.selected + 1)
           }}
         />
       )}
-      {data && data.items.length ? "Liste des charges" : "Aucune charge"}
+      {items && items.length ? "Liste des charges" : "Aucune charge"}
     </Flex>
   )
 
@@ -57,8 +61,8 @@ const ListCharge: FC = () => {
       <TableCaption>{caption()}</TableCaption>
       <Thead>{colums()}</Thead>
       <Tbody>
-        {data &&
-          data.items.map((c) => {
+        {items &&
+          items.map((c) => {
             return (
               <Tr key={c.id}>
                 <Td>{c.designation}</Td>
