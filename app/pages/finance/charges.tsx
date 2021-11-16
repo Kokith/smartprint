@@ -31,9 +31,10 @@ import { BlitzPage, invalidateQuery, useMutation, useQuery } from "@blitzjs/core
 import { TAKE } from "app/core/configs"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { useFormik } from "formik"
-import { MdAdd, MdDelete } from "react-icons/md"
+import { MdAdd, MdEdit } from "react-icons/md"
 import { DefaultChargeInput, DefaultChargeSchema } from "app/charge/validation"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
+import { Charge } from "db"
 import AppLayout from "app/core/components/layout/AppLayout"
 import charges from "app/charge/queries/charges"
 import Pagination from "app/core/components/common/Pagination"
@@ -41,6 +42,7 @@ import DatePicker from "app/core/components/common/DatePicker"
 import createCharge from "app/charge/mutations/createCharge"
 import delCharge from "app/charge/mutations/delCharge"
 import DelBtn from "app/core/components/common/DelBtn"
+import updateCharge from "app/charge/mutations/updateCharge"
 
 const FormCharge: FC<{
   values: DefaultChargeInput
@@ -165,6 +167,83 @@ const AddCharge: FC = () => {
   )
 }
 
+const UpdateCharge: FC<{
+  initialData: Charge
+}> = ({ initialData }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { handleCustomError, toast } = useHandleCustomError()
+  const [mutate] = useMutation(updateCharge)
+
+  const initialValues: DefaultChargeInput = {
+    designation: initialData.designation,
+    description: initialData.description,
+    prix: initialData.prix,
+    date: initialData.date.toISOString(),
+  }
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema: DefaultChargeSchema,
+    onSubmit: async (values) => {
+      try {
+        await mutate({
+          id: initialData.id,
+          data: {
+            designation: values.designation,
+            description: values.description,
+            prix: Number(values.prix),
+            date: values.date,
+          },
+        })
+        toast({
+          title: "La charge a ete modifier avec succes",
+          status: "success",
+          isClosable: true,
+        })
+        invalidateQuery(charges)
+      } catch (err) {
+        handleCustomError(err)
+      }
+    },
+  })
+
+  const initialRef = React.useRef<any>()
+  const finalRef = React.useRef<any>()
+
+  return (
+    <Fragment>
+      <Button colorScheme="blue" onClick={onOpen} variant="ghost">
+        <Icon as={MdEdit} width={ICON_SIZE} height={ICON_SIZE} />
+      </Button>
+
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <form onSubmit={formik.handleSubmit}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Modifier une charge</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <FormCharge values={formik.values} onChange={(key) => formik.handleChange(key)} />
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} type="submit" disabled={false}>
+                Enregistrer
+              </Button>
+              <Button onClick={onClose}>Annuler</Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
+      </Modal>
+    </Fragment>
+  )
+}
+
 const DelCharge: FC<{ id: number }> = ({ id }) => {
   const toast = useToast()
   const [mutate, { isLoading }] = useMutation(delCharge)
@@ -235,6 +314,7 @@ const ListCharge: FC = () => {
                 <Td>{c.date.toISOString()}</Td>
                 <Td>
                   <DelCharge id={c.id} />
+                  <UpdateCharge initialData={c} />
                 </Td>
               </Tr>
             )
