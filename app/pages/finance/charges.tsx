@@ -24,13 +24,14 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { financeNavbar } from "app/core/components/layout/Navbar"
 import { BlitzPage, invalidateQuery, useMutation, useQuery } from "@blitzjs/core"
 import { TAKE } from "app/core/configs"
 import { ICON_SIZE } from "app/core/styles/theme"
 import { useFormik } from "formik"
-import { MdAdd } from "react-icons/md"
+import { MdAdd, MdDelete } from "react-icons/md"
 import { DefaultChargeInput, DefaultChargeSchema } from "app/charge/validation"
 import { useHandleCustomError } from "app/core/services/useHandleCustomError"
 import AppLayout from "app/core/components/layout/AppLayout"
@@ -38,6 +39,8 @@ import charges from "app/charge/queries/charges"
 import Pagination from "app/core/components/common/Pagination"
 import DatePicker from "app/core/components/common/DatePicker"
 import createCharge from "app/charge/mutations/createCharge"
+import delCharge from "app/charge/mutations/delCharge"
+import DelBtn from "app/core/components/common/DelBtn"
 
 const FormCharge: FC<{
   values: DefaultChargeInput
@@ -162,6 +165,23 @@ const AddCharge: FC = () => {
   )
 }
 
+const DelCharge: FC<{ id: number }> = ({ id }) => {
+  const toast = useToast()
+  const [mutate, { isLoading }] = useMutation(delCharge)
+
+  const handleSubmit = async (): Promise<void> => {
+    await mutate(id)
+    invalidateQuery(charges)
+    toast({
+      title: "La charge a ete supprimer avec succes",
+      status: "success",
+      isClosable: true,
+    })
+  }
+
+  return <DelBtn label="la charge" isLoading={isLoading} onSubmit={handleSubmit} />
+}
+
 const ListCharge: FC = () => {
   const [take, setTake] = useState<number>(TAKE[0] as number)
   const [page, setPage] = useState(1)
@@ -214,9 +234,7 @@ const ListCharge: FC = () => {
                 <Td>{c.prix}</Td>
                 <Td>{c.date.toISOString()}</Td>
                 <Td>
-                  {/* <DelCharge id={c.id} />
-                  <UpdateCharge initialData={c} /> */}
-                  Actions
+                  <DelCharge id={c.id} />
                 </Td>
               </Tr>
             )
