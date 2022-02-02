@@ -1,0 +1,31 @@
+version: "3.9"
+#author Joel Ramaroson
+services:
+  monolithic-postgres:
+    container_name: monolithic-postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA}
+    volumes:
+      # - ./db/dbPostgres:/var/lib/postgresql/data/
+      - ./db/dbPostgres:/data/postgres
+    restart: always
+  pgAdmin:
+    image: dpage/pgadmin4
+    container_name: monolithic-pgadmin
+    ports:
+      - "5050:80"
+    restart: always
+    volumes:
+      - ./db/pgAdmin:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      # PGADMIN_CONFIG_SERVER_MODE: 'False'
+volumes:
+  database-data:
+  pgadmin:
