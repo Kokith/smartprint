@@ -1,8 +1,4 @@
 {
-  "engines": {
-    "npm": ">=8.4.0",
-    "node": ">=17.3.0"
-  },
   "name": "monolithic",
   "version": "1.0.0",
   "scripts": {
