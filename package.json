@@ -39,9 +39,9 @@
     "blitz": "0.39.0",
     "formik": "2.2.9",
     "framer-motion": "4.1.17",
-    "react": "alpha",
+    "react": "17.0.1",
     "react-datepicker": "4.3.0",
-    "react-dom": "alpha",
+    "react-dom": "17.0.1",
     "react-icons": "4.2.0",
     "react-paginate": "7.1.3",
     "yup": "0.32.9"
