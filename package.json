@@ -1,4 +1,7 @@
 {
+  "resolutions": {
+    "workbox-build": "6.1.5"
+  },
   "name": "monolithic",
   "version": "1.0.0",
   "scripts": {
